@@ -4,8 +4,6 @@
     "mineprevention.screen.options.title": "Mine Prevention Options",
     "mineprevention.screen.options.allowed": "Allowed Blocks",
     "mineprevention.screen.options.denied": "Denied Blocks",
-    "mineprevention.narration.item": "%s",
-    "mineprevention.narration.item.usage": "Click to move %s to the other list",
     "mineprevention.narration.container.allowed": "Allowed Blocks",
-    "mineprevention.narration.container.denied": "Denied Blocks",
+    "mineprevention.narration.container.denied": "Denied Blocks"
 }

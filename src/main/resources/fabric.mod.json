@@ -1,18 +1,18 @@
 {
 	"schemaVersion": 1,
-	"id": "mine-prevention",
+	"id": "mineprevention",
 	"version": "${version}",
-	"name": "mine-prevention",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Mine Prevention",
+	"description": "Allow or deny any blocks from being mined!",
 	"authors": [
-		"Me!"
+		"BVengo"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/BVengo/mine-prevention",
+		"issues": "https://github.com/BVengo/mine-prevention/issues"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/mine-prevention/icon.png",
+	"icon": "assets/mineprevention/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -23,9 +23,9 @@
 		]
 	},
 	"mixins": [
-		"mine-prevention.mixins.json",
+		"mineprevention.mixins.json",
 		{
-			"config": "mine-prevention.client.mixins.json",
+			"config": "mineprevention.client.mixins.json",
 			"environment": "client"
 		}
 	],

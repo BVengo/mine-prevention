@@ -1,8 +1,9 @@
 package dev.bvengo.mineprevention.mixin.client;
 
+import dev.bvengo.mineprevention.MinePreventionClientMod;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
@@ -18,7 +19,7 @@ public class PlayerEntityMixin {
 		Block block = world.getBlockState(pos).getBlock();
 
 		// Stop if the block is stone
-		if (block == Blocks.STONE) {
+		if (MinePreventionClientMod.CONFIGS.denyList.contains(Registries.ITEM.getId(block.asItem()).toString())) {
 			cir.setReturnValue(true);
 			cir.cancel();
 		}

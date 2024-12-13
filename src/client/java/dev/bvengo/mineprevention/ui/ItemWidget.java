@@ -8,23 +8,42 @@ import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 
 
-import static dev.bvengo.mineprevention.MinePreventionMod.MOD_ID;
+import static dev.bvengo.mineprevention.MinePreventionMod.LOGGER;
 import static net.minecraft.client.gui.screen.Screen.getTooltipFromItem;
 
 public class ItemWidget extends ClickableWidget {
 
-	public static final int SIZE = 16;
+	private final String itemId;
 	private final ItemStack itemStack;
+	private final MinecraftClient client;
+	private boolean allowed;
 
-	private MinecraftClient client;
-
-	public ItemWidget(MinecraftClient client, ItemStack itemStack) {
-		super(0, 0, SIZE, SIZE, null);
+	public ItemWidget(MinecraftClient client, String itemId, boolean allowed) {
+		super(0, 0, Constants.ITEM_SIZE, Constants.ITEM_SIZE, null);
 		this.client = client;
-		this.itemStack = itemStack;
+		this.itemId = itemId;
+		this.itemStack = Registries.ITEM.get(Identifier.of(itemId)).getDefaultStack();
+		this.allowed = allowed;
+	}
+
+	public String getItemId() {
+		return itemId;
+	}
+
+	public ItemStack getItemStack() {
+		return itemStack;
+	}
+
+	public boolean isAllowed() {
+		return allowed;
+	}
+
+	public void setAllowed(boolean allowed) {
+		this.allowed = allowed;
 	}
 
 	@Override
@@ -33,7 +52,7 @@ public class ItemWidget extends ClickableWidget {
 		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
 
 		if (this.hovered) {
-			context.fill(this.getX(), this.getY(), this.getX() + SIZE, this.getY() + SIZE, -2130706433);
+			context.fill(this.getX(), this.getY(), this.getX() + Constants.ITEM_SIZE, this.getY() + Constants.ITEM_SIZE, -2130706433);
 		}
 
 		context.drawItemWithoutEntity(itemStack, this.getX(), this.getY());
@@ -48,13 +67,11 @@ public class ItemWidget extends ClickableWidget {
 
 	@Override
 	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, Text.translatable(MOD_ID + ".narration.item", this.itemStack.getName()));
-		builder.put(NarrationPart.USAGE, Text.translatable(MOD_ID + ".narration.item.usage", this.itemStack.getName()));
+		builder.put(NarrationPart.TITLE, this.itemStack.getName());
 	}
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
-		super.onClick(mouseX, mouseY);
-		System.out.println("Clicked on item: " + itemStack.getName().getString());
+		LOGGER.info("Clicked on item: {}", itemStack.getName().getString());
 	}
 }

@@ -55,7 +55,7 @@ public class Configs extends ConfigParser implements Serializable {
 		save();
 	}
 
-	private int findInsertIndex(ArrayList<String> list, String item) {
+	public int findInsertIndex(ArrayList<String> list, String item) {
 		// Use binary search to find the correct insertion point
 		int low = 0;
 		int high = list.size() - 1;

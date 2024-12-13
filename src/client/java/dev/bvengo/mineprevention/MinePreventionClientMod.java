@@ -21,10 +21,10 @@ public class MinePreventionClientMod implements ClientModInitializer {
 	public void onInitializeClient() {
 		// Keybinding to open the config screen
 		openConfigScreen = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"key." + MOD_ID + ".open_settings",
+				MOD_ID + ".key.open_settings",
 				InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_M,
-				"category." + MOD_ID
+				MOD_ID + ".category"
 		));
 
 		// Open the config screen when the key is pressed
