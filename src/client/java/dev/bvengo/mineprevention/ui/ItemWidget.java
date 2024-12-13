@@ -10,10 +10,13 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Comparator;
 
 import static net.minecraft.client.gui.screen.Screen.getTooltipFromItem;
 
-public class ItemWidget extends ClickableWidget {
+public class ItemWidget extends ClickableWidget implements Comparable<ItemWidget> {
 
 	private final String itemId;
 	private final ItemStack itemStack;
@@ -71,5 +74,12 @@ public class ItemWidget extends ClickableWidget {
 	@Override
 	public void onClick(double mouseX, double mouseY) {
 		this.setAllowed(!this.isAllowed());
+	}
+
+	@Override
+	public int compareTo(@NotNull ItemWidget itemWidget) {
+		int aIndex = Registries.ITEM.getRawId(this.getItemStack().getItem());
+		int bIndex = Registries.ITEM.getRawId(itemWidget.getItemStack().getItem());
+		return aIndex - bIndex;
 	}
 }

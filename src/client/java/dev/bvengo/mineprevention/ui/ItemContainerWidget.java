@@ -1,18 +1,14 @@
 package dev.bvengo.mineprevention.ui;
 
-import dev.bvengo.mineprevention.MinePreventionClientMod;
-import dev.bvengo.mineprevention.MinePreventionMod;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ContainerWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 

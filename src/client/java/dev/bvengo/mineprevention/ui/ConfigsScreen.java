@@ -6,11 +6,15 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static dev.bvengo.mineprevention.MinePreventionMod.MOD_ID;
 import static dev.bvengo.mineprevention.ui.Constants.*;
@@ -33,9 +37,11 @@ public class ConfigsScreen extends Screen {
 
 	@Override
 	protected void init() {
-		// Load all items
-		allItems = widgetsFromConfigs(MinePreventionClientMod.CONFIGS.allowList, true);
-		allItems.addAll(widgetsFromConfigs(MinePreventionClientMod.CONFIGS.denyList, false));
+		// Load all items, sorted for correct display order
+		allItems = Stream.concat(
+				MinePreventionClientMod.CONFIGS.allowList.stream().map(itemId -> new ItemWidget(client, itemId, true)),
+				MinePreventionClientMod.CONFIGS.denyList.stream().map(itemId -> new ItemWidget(client, itemId, false))
+		).sorted().collect(Collectors.toCollection(ArrayList::new));
 
 		// Title
 		TextWidget title = new TextWidget(0, TEXT_HEIGHT, width, TEXT_HEIGHT, this.getTitle(), textRenderer).alignCenter();
@@ -43,20 +49,20 @@ public class ConfigsScreen extends Screen {
 
 		// Search field
 		this.searchField = new TextFieldWidget(textRenderer, HORIZONTAL_PADDING, title.getBottom() + VERTICAL_PADDING, width - HORIZONTAL_PADDING * 4 - BUTTON_SIZE * 2, SEARCH_HEIGHT, Text.translatable(MOD_ID + ".screen.options.search"));
-		this.searchField.setChangedListener((string) -> refreshVisibleItems(true)); // Update only visible items
+		this.searchField.setChangedListener((string) -> refreshItemLists(true)); // Update only visible items
 		this.searchField.setFocusUnlocked(false);
 		this.addSelectableChild(this.searchField);
 
 		// Buttons to allow/deny all
 		this.allowAllButton = new TriggerButtonWidget("left", searchField.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
 			allItems.forEach(item -> item.setAllowed(true));
-			refreshVisibleItems(true); // Refresh the visible items only
+			refreshItemLists(true); // Refresh the visible items only
 		});
 		this.addSelectableChild(allowAllButton);
 
 		this.denyAllButton = new TriggerButtonWidget("right", allowAllButton.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
 			allItems.forEach(item -> item.setAllowed(false));
-			refreshVisibleItems(true); // Refresh the visible items only
+			refreshItemLists(true); // Refresh the visible items only
 		});
 		this.addSelectableChild(denyAllButton);
 
@@ -72,13 +78,13 @@ public class ConfigsScreen extends Screen {
 		this.addSelectableChild(deniedContainer);
 
 		// Initial refresh to populate the containers
-		refreshVisibleItems(true);
+		refreshItemLists(true);
 	}
 
 	/**
 	 * Refresh only the visible items in the containers based on the current filters.
 	 */
-	private void refreshVisibleItems(boolean shouldResetScroll) {
+	private void refreshItemLists(boolean shouldResetScroll) {
 		String searchQuery = searchField.getText().toLowerCase();
 
 		// Filter items for allowedContainer
@@ -98,10 +104,6 @@ public class ConfigsScreen extends Screen {
 		MinePreventionClientMod.CONFIGS.allowList = allItems.stream().filter(ItemWidget::isAllowed).map(ItemWidget::getItemId).collect(Collectors.toCollection(ArrayList::new));
 		MinePreventionClientMod.CONFIGS.denyList = allItems.stream().filter((item) -> !item.isAllowed()).map(ItemWidget::getItemId).collect(Collectors.toCollection(ArrayList::new));
 		MinePreventionClientMod.CONFIGS.save();
-	}
-
-	private ArrayList<ItemWidget> widgetsFromConfigs(ArrayList<String> list, boolean allowed) {
-		return list.stream().map((id) -> new ItemWidget(client, id, allowed)).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
@@ -125,7 +127,7 @@ public class ConfigsScreen extends Screen {
 			searchField.setFocused(false);
 
 			if (focused instanceof ItemContainerWidget) {
-				refreshVisibleItems(false);  // Refresh with moved items
+				refreshItemLists(false);  // Refresh with moved items
 			}
 		}
 
