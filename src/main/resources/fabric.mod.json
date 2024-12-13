@@ -11,7 +11,7 @@
 		"sources": "https://github.com/BVengo/mine-prevention",
 		"issues": "https://github.com/BVengo/mine-prevention/issues"
 	},
-	"license": "CC0-1.0",
+	"license": "LGPL-3.0",
 	"icon": "assets/mineprevention/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -20,6 +20,9 @@
 		],
 		"client": [
             "dev.bvengo.mineprevention.MinePreventionClientMod"
+		],
+		"modmenu": [
+			"dev.bvengo.mineprevention.MinePreventionModMenuApiImpl"
 		]
 	},
 	"mixins": [
@@ -35,5 +38,16 @@
 		"java": ">=21",
 		"fabric-api": "*",
 		"fabric-key-binding-api-v1": "*"
+	},
+	"recommends": {
+		"modmenu": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.discord": "https://discord.gg/gyTa5v7kKk"
+			},
+			"update_checker": true
+		}
 	}
 }
