@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "package": "dev.bvengo.mineprevention.mixin.client",
+    "compatibilityLevel": "JAVA_21",
+    "client": [
+        "PlayerEntityMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "mixins": []
+}
