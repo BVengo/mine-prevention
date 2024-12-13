@@ -11,8 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
-
-import static dev.bvengo.mineprevention.MinePreventionMod.LOGGER;
 import static net.minecraft.client.gui.screen.Screen.getTooltipFromItem;
 
 public class ItemWidget extends ClickableWidget {
@@ -72,6 +70,6 @@ public class ItemWidget extends ClickableWidget {
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
-		LOGGER.info("Clicked on item: {}", itemStack.getName().getString());
+		this.setAllowed(!this.isAllowed());
 	}
 }

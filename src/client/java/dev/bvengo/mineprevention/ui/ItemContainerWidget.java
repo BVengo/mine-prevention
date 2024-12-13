@@ -1,14 +1,18 @@
 package dev.bvengo.mineprevention.ui;
 
+import dev.bvengo.mineprevention.MinePreventionClientMod;
+import dev.bvengo.mineprevention.MinePreventionMod;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ContainerWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -34,9 +38,12 @@ public class ItemContainerWidget extends ContainerWidget {
 		this.CENTERING_OFFSET = (DISPLAY_WIDTH % ITEM_SIZE) / 2;
 	}
 
-	public void setItems(List<ItemWidget> items) {
+	public void setItems(List<ItemWidget> items, boolean refreshScroll) {
 		this.items = items;
-		this.setScrollY(0);
+
+		if(refreshScroll) {
+			this.setScrollY(0);
+		}
 	}
 
 	@Override
@@ -55,7 +62,7 @@ public class ItemContainerWidget extends ContainerWidget {
 	@Override
 	protected int getContentsHeightWithPadding() {
 		// Calculates the height of the container, including off-screen items
-		return (int) (items.size() / getItemsPerRow()) * ITEM_SIZE;
+		return (int)Math.ceil((float)items.size() * ITEM_SIZE / getItemsPerRow());
 	}
 
 	@Override
@@ -106,7 +113,7 @@ public class ItemContainerWidget extends ContainerWidget {
 		drawScrollbar(context);
 
 		// Render only the visible children
-		int row = (int)Math.floor(this.getScrollY() / ITEM_SIZE);
+		int row = (int)Math.ceil(this.getScrollY() / ITEM_SIZE);
 
 		int start = row * getItemsPerRow();
 		int end = Math.min(items.size(), start + getItemsPerRow() * getNumVisibleRows());
@@ -120,17 +127,10 @@ public class ItemContainerWidget extends ContainerWidget {
 			item.setPosition(x, y);
 			item.render(context, mouseX, mouseY, delta);
 		}
-
-//		context.drawBorder(this.getX() + HORIZONTAL_PADDING, TOP_ROW_Y, DISPLAY_WIDTH, DISPLAY_HEIGHT, Colors.RED);
 	}
 
 	@Override
 	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
-
-	}
-
-	@Override
-	public void onClick(double mouseX, double mouseY) {
 
 	}
 }

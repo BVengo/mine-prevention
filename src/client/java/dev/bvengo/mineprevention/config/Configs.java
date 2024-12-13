@@ -14,7 +14,7 @@ public class Configs extends ConfigParser implements Serializable {
 	public transient ArrayList<String> allowList = new ArrayList<>();
 	public ArrayList<String> denyList = new ArrayList<>();
 
-	private final Comparator<String> itemComparator = (a, b) -> {
+	private final transient Comparator<String> itemComparator = (a, b) -> {
 		int aIndex = Registries.ITEM.getRawId(Registries.ITEM.get(Identifier.of(a)));
 		int bIndex = Registries.ITEM.getRawId(Registries.ITEM.get(Identifier.of(b)));
 		return aIndex - bIndex;

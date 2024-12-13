@@ -2,6 +2,7 @@ package dev.bvengo.mineprevention.ui;
 
 import dev.bvengo.mineprevention.MinePreventionClientMod;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.screen.Screen;
@@ -42,20 +43,20 @@ public class ConfigsScreen extends Screen {
 
 		// Search field
 		this.searchField = new TextFieldWidget(textRenderer, HORIZONTAL_PADDING, title.getBottom() + VERTICAL_PADDING, width - HORIZONTAL_PADDING * 4 - BUTTON_SIZE * 2, SEARCH_HEIGHT, Text.translatable(MOD_ID + ".screen.options.search"));
-		this.searchField.setChangedListener((string) -> refreshVisibleItems()); // Update only visible items
+		this.searchField.setChangedListener((string) -> refreshVisibleItems(true)); // Update only visible items
 		this.searchField.setFocusUnlocked(false);
 		this.addSelectableChild(this.searchField);
 
 		// Buttons to allow/deny all
 		this.allowAllButton = new TriggerButtonWidget("reset", searchField.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
 			allItems.forEach(item -> item.setAllowed(true));
-			refreshVisibleItems(); // Refresh the visible items only
+			refreshVisibleItems(true); // Refresh the visible items only
 		});
 		this.addSelectableChild(allowAllButton);
 
 		this.denyAllButton = new TriggerButtonWidget("filter", allowAllButton.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
 			allItems.forEach(item -> item.setAllowed(false));
-			refreshVisibleItems(); // Refresh the visible items only
+			refreshVisibleItems(true); // Refresh the visible items only
 		});
 		this.addSelectableChild(denyAllButton);
 
@@ -71,26 +72,26 @@ public class ConfigsScreen extends Screen {
 		this.addSelectableChild(deniedContainer);
 
 		// Initial refresh to populate the containers
-		refreshVisibleItems();
+		refreshVisibleItems(true);
 	}
 
 	/**
 	 * Refresh only the visible items in the containers based on the current filters.
 	 */
-	private void refreshVisibleItems() {
+	private void refreshVisibleItems(boolean shouldResetScroll) {
 		String searchQuery = searchField.getText().toLowerCase();
 
 		// Filter items for allowedContainer
 		ArrayList<ItemWidget> allowedItems = allItems.stream()
 				.filter(item -> item.isAllowed() && item.getItemStack().getName().getString().toLowerCase().contains(searchQuery))
 				.collect(Collectors.toCollection(ArrayList::new));
-		allowedContainer.setItems(allowedItems);
+		allowedContainer.setItems(allowedItems, shouldResetScroll);
 
 		// Filter items for deniedContainer
 		ArrayList<ItemWidget> deniedItems = allItems.stream()
 				.filter(item -> !item.isAllowed() && item.getItemStack().getName().getString().toLowerCase().contains(searchQuery))
 				.collect(Collectors.toCollection(ArrayList::new));
-		deniedContainer.setItems(deniedItems);
+		deniedContainer.setItems(deniedItems, shouldResetScroll);
 	}
 
 	private void save() {
@@ -113,6 +114,22 @@ public class ConfigsScreen extends Screen {
 		deniedContainer.render(context, mouseX, mouseY, delta);
 
 		context.drawVerticalLine(width / 2, searchField.getBottom() + VERTICAL_PADDING, height - VERTICAL_PADDING, Colors.LIGHT_GRAY);
+	}
+
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		boolean clicked = super.mouseClicked(mouseX, mouseY, button);
+
+		Element focused  = getFocused();
+		if (focused != searchField) {
+			searchField.setFocused(false);
+
+			if (focused instanceof ItemContainerWidget) {
+				refreshVisibleItems(false);  // Refresh with moved items
+			}
+		}
+
+		return clicked;
 	}
 
 	@Override
