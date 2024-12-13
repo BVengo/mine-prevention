@@ -48,13 +48,13 @@ public class ConfigsScreen extends Screen {
 		this.addSelectableChild(this.searchField);
 
 		// Buttons to allow/deny all
-		this.allowAllButton = new TriggerButtonWidget("reset", searchField.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
+		this.allowAllButton = new TriggerButtonWidget("left", searchField.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
 			allItems.forEach(item -> item.setAllowed(true));
 			refreshVisibleItems(true); // Refresh the visible items only
 		});
 		this.addSelectableChild(allowAllButton);
 
-		this.denyAllButton = new TriggerButtonWidget("filter", allowAllButton.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
+		this.denyAllButton = new TriggerButtonWidget("right", allowAllButton.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
 			allItems.forEach(item -> item.setAllowed(false));
 			refreshVisibleItems(true); // Refresh the visible items only
 		});

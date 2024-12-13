@@ -5,5 +5,7 @@
     "mineprevention.screen.options.allowed": "Allowed Blocks",
     "mineprevention.screen.options.denied": "Denied Blocks",
     "mineprevention.narration.container.allowed": "Allowed Blocks",
-    "mineprevention.narration.container.denied": "Denied Blocks"
+    "mineprevention.narration.container.denied": "Denied Blocks",
+    "mineprevention.button.left.tooltip": "Click to allow mining of all items",
+    "mineprevention.button.right.tooltip": "Click to deny mining of all items"
 }
