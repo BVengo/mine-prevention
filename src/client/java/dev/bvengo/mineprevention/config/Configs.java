@@ -2,7 +2,6 @@ package dev.bvengo.mineprevention.config;
 
 import net.minecraft.item.BlockItem;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 
 import java.io.Serializable;
 import java.util.ArrayList;

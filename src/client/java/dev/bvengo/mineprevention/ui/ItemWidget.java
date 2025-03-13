@@ -12,8 +12,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Comparator;
-
 import static net.minecraft.client.gui.screen.Screen.getTooltipFromItem;
 
 public class ItemWidget extends ClickableWidget implements Comparable<ItemWidget> {
