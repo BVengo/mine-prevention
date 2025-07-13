@@ -1,11 +1,11 @@
 package dev.bvengo.mineprevention.ui;
 
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ContainerWidget;
 import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -94,12 +94,12 @@ public class ItemContainerWidget extends ContainerWidget {
 	protected void drawScrollbar(DrawContext context) {
 		int x = this.getScrollbarX();
 
-		context.drawGuiTexture(RenderLayer::getGuiTextured, SCROLLER_BACKGROUND_TEXTURE, x, TOP_ROW_Y, SCROLLBAR_WIDTH, DISPLAY_HEIGHT);
+		context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, SCROLLER_BACKGROUND_TEXTURE, x, TOP_ROW_Y, SCROLLBAR_WIDTH, DISPLAY_HEIGHT);
 
 		if(this.overflows()) {
-			context.drawGuiTexture(RenderLayer::getGuiTextured, SCROLLER_TEXTURE, x, getScrollbarThumbY(), SCROLLBAR_WIDTH, getScrollbarThumbHeight());
+			context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, SCROLLER_TEXTURE, x, getScrollbarThumbY(), SCROLLBAR_WIDTH, getScrollbarThumbHeight());
 		} else {
-			context.drawGuiTexture(RenderLayer::getGuiTextured, SCROLLER_TEXTURE, x, TOP_ROW_Y, SCROLLBAR_WIDTH, DISPLAY_HEIGHT);
+			context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, SCROLLER_TEXTURE, x, TOP_ROW_Y, SCROLLBAR_WIDTH, DISPLAY_HEIGHT);
 		}
 	}
 

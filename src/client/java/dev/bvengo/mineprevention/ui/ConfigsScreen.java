@@ -6,13 +6,10 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +26,7 @@ public class ConfigsScreen extends Screen {
 	TriggerButtonWidget allowAllButton;
 	TriggerButtonWidget denyAllButton;
 
+	TextWidget titleWidget;
 	TextFieldWidget searchField;
 
 	public ConfigsScreen() {
@@ -43,16 +41,27 @@ public class ConfigsScreen extends Screen {
 				MinePreventionClientMod.CONFIGS.denyList.stream().map(itemId -> new ItemWidget(client, itemId, false))
 		).sorted().collect(Collectors.toCollection(ArrayList::new));
 
-		// Title
-		TextWidget title = new TextWidget(0, TEXT_HEIGHT, width, TEXT_HEIGHT, this.getTitle(), textRenderer).alignCenter();
-		this.addDrawable(title);
+		initTitle();
+		initSearchField();
+		initMoveButtons();
+		initItemContainers();
 
-		// Search field
-		this.searchField = new TextFieldWidget(textRenderer, HORIZONTAL_PADDING, title.getBottom() + VERTICAL_PADDING, width - HORIZONTAL_PADDING * 4 - BUTTON_SIZE * 2, SEARCH_HEIGHT, Text.translatable(MOD_ID + ".screen.options.search"));
+		refreshItemLists(true); // Populate the containers
+	}
+
+	private void initTitle() {
+		titleWidget = new TextWidget(0, TEXT_HEIGHT, width, TEXT_HEIGHT, this.getTitle(), textRenderer).alignCenter();
+		this.addDrawable(titleWidget);
+	}
+
+	private void initSearchField() {
+		this.searchField = new TextFieldWidget(textRenderer, HORIZONTAL_PADDING, titleWidget.getBottom() + VERTICAL_PADDING, width - HORIZONTAL_PADDING * 4 - BUTTON_SIZE * 2, SEARCH_HEIGHT, Text.translatable(MOD_ID + ".screen.options.search"));
 		this.searchField.setChangedListener((string) -> refreshItemLists(true)); // Update only visible items
 		this.searchField.setFocusUnlocked(false);
 		this.addSelectableChild(this.searchField);
+	}
 
+	private void initMoveButtons() {
 		// Buttons to allow/deny all
 		this.allowAllButton = new TriggerButtonWidget("left", searchField.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
 			allItems.forEach(item -> item.setAllowed(true));
@@ -65,7 +74,9 @@ public class ConfigsScreen extends Screen {
 			refreshItemLists(true); // Refresh the visible items only
 		});
 		this.addSelectableChild(denyAllButton);
+	}
 
+	private void initItemContainers() {
 		// Allow container
 		int containerWidth = width / 2 - HORIZONTAL_PADDING * 2;  // Padding either side
 		int containerHeight = height - searchField.getBottom() - VERTICAL_PADDING - VERTICAL_PADDING;
@@ -76,9 +87,6 @@ public class ConfigsScreen extends Screen {
 		// Deny container
 		deniedContainer = new ItemContainerWidget(textRenderer, width - containerWidth - HORIZONTAL_PADDING, allowedContainer.getY(), containerWidth, containerHeight, Text.translatable(MOD_ID + ".screen.options.denied"));
 		this.addSelectableChild(deniedContainer);
-
-		// Initial refresh to populate the containers
-		refreshItemLists(true);
 	}
 
 	/**

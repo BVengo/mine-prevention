@@ -47,15 +47,11 @@ public class ItemWidget extends ClickableWidget implements Comparable<ItemWidget
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.getMatrices().push();
-		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
-
 		if (this.hovered) {
 			context.fill(this.getX(), this.getY(), this.getX() + Constants.ITEM_SIZE, this.getY() + Constants.ITEM_SIZE, -2130706433);
 		}
 
 		context.drawItemWithoutEntity(itemStack, this.getX(), this.getY());
-		context.getMatrices().pop();
 
 		if (hovered) {
 			// In case it ever gets removed, getTooltipFromItem is a wrapper for the below:
