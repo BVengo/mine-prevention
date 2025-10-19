@@ -1,6 +1,7 @@
 package dev.bvengo.mineprevention.ui;
 
 import dev.bvengo.mineprevention.MinePreventionClientMod;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -50,7 +51,7 @@ public class ConfigsScreen extends Screen {
 	}
 
 	private void initTitle() {
-		titleWidget = new TextWidget(0, TEXT_HEIGHT, width, TEXT_HEIGHT, this.getTitle(), textRenderer).alignCenter();
+		titleWidget = new CenteredTextWidget(0, TEXT_HEIGHT, width, TEXT_HEIGHT, this.getTitle(), textRenderer);
 		this.addDrawable(titleWidget);
 	}
 
@@ -127,8 +128,8 @@ public class ConfigsScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		boolean clicked = super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		boolean clicked = super.mouseClicked(click, doubled);
 
 		Element focused  = getFocused();
 		if (focused != searchField) {

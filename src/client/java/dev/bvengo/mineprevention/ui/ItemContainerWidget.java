@@ -3,6 +3,7 @@ package dev.bvengo.mineprevention.ui;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.cursor.StandardCursors;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ContainerWidget;
 import net.minecraft.client.gui.widget.TextWidget;
@@ -27,7 +28,7 @@ public class ItemContainerWidget extends ContainerWidget {
 
 	public ItemContainerWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text title) {
 		super(x, y, width, height, title);
-		this.titleWidget = new TextWidget(x, y, width, TEXT_HEIGHT, title, textRenderer).alignCenter();
+		this.titleWidget = new CenteredTextWidget(x, y, width, TEXT_HEIGHT, title, textRenderer); // .alignCenter();
 		this.TOP_ROW_Y = titleWidget.getBottom() + VERTICAL_PADDING;
 		this.DISPLAY_WIDTH = width - HORIZONTAL_PADDING * 2 - SCROLLBAR_WIDTH;
 		this.DISPLAY_HEIGHT = ((height - titleWidget.getHeight() - VERTICAL_PADDING) / ITEM_SIZE) * ITEM_SIZE;
@@ -91,7 +92,7 @@ public class ItemContainerWidget extends ContainerWidget {
 	}
 
 	@Override
-	protected void drawScrollbar(DrawContext context) {
+	protected void drawScrollbar(DrawContext context, int mouseX, int mouseY) {
 		int x = this.getScrollbarX();
 
 		context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, SCROLLER_BACKGROUND_TEXTURE, x, TOP_ROW_Y, SCROLLBAR_WIDTH, DISPLAY_HEIGHT);
@@ -106,7 +107,7 @@ public class ItemContainerWidget extends ContainerWidget {
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		titleWidget.render(context, mouseX, mouseY, delta);
-		drawScrollbar(context);
+		drawScrollbar(context, mouseX, mouseY);
 
 		// Render only the visible children
 		int row = (int)Math.ceil(this.getScrollY() / ITEM_SIZE);
