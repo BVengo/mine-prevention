@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version "${loom_version}"
+	id 'fabric-loom' version '1.14.10'
 	id 'maven-publish'
 }
 
@@ -11,15 +11,19 @@ base {
 }
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
-	maven {
-		name = "Terraformers"
-		url = "https://maven.terraformersmc.com"
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Terraformers"
+				url = "https://maven.terraformersmc.com/"
+			}
+		}
+		filter {
+			includeGroup 'com.terraformersmc'
+		}
 	}
+	// Fallback
+	mavenCentral()
 }
 
 loom {
@@ -40,19 +44,23 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-	// ModMenu
-	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-	
+	modLocalRuntime(modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}")
 }
 
 processResources {
 	inputs.property "version", project.version
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+		expand "version": project.version,
+				"id": project.archives_base_name,
+				"name": project.mod_name,
+				"description": project.mod_description,
+				"minecraft_version": project.minecraft_version,
+				"loader_version": project.loader_version,
+				"fabric_api_version": project.fabric_api_version,
+				"modmenu_version": project.modmenu_version
 	}
 }
 

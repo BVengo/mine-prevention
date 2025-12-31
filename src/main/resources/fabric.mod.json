@@ -1,9 +1,9 @@
 {
 	"schemaVersion": 1,
-	"id": "mineprevention",
+	"id": "${id}",
 	"version": "${version}",
-	"name": "Mine Prevention",
-	"description": "Allow or deny any blocks from being mined!",
+	"name": "${name}",
+	"description": "${description}",
 	"authors": [
 		"BVengo"
 	],
@@ -45,7 +45,8 @@
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.discord": "https://discord.gg/gyTa5v7kKk"
+				"modmenu.discord": "https://discord.gg/gyTa5v7kKk",
+				"modmenu.modrinth": "https://modrinth.com/mod/mine-prevention"
 			},
 			"update_checker": true
 		}

@@ -4,10 +4,15 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.ColorHelper;
 
 public class CenteredTextWidget extends TextWidget {
 	public CenteredTextWidget(int x, int y, int width, int height, net.minecraft.text.Text message, net.minecraft.client.font.TextRenderer textRenderer) {
 		super(x, y, width, height, message, textRenderer);
+	}
+
+	private int getTextColor() {
+		return ColorHelper.getWhite(1.0f);
 	}
 
 	@Override

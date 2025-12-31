@@ -8,7 +8,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 /**
@@ -28,7 +27,10 @@ public class HoverableButtonWidget extends ButtonWidget {
     public HoverableButtonWidget(String buttonId, int x, int y, int width, int height, PressAction pressAction) {
         super(x, y, width, height, ScreenTexts.EMPTY, pressAction, DEFAULT_NARRATION_SUPPLIER);
 
-        this.setTooltip(Tooltip.of(Text.translatable(MinePreventionMod.MOD_ID + ".button." + buttonId + ".tooltip")));
+        this.setTooltip(Tooltip.of(
+            // Explicit import thanks to ButtonWidget.Text subclass name conflict
+            net.minecraft.text.Text.translatable(MinePreventionMod.MOD_ID + ".button." + buttonId + ".tooltip")
+        ));
 
         ON_TEXTURE = Identifier.of(MinePreventionMod.MOD_ID, buttonId + "_button_on");
         OFF_TEXTURE = Identifier.of(MinePreventionMod.MOD_ID, buttonId + "_button_off");
@@ -37,7 +39,8 @@ public class HoverableButtonWidget extends ButtonWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+        // Replacing the final `this.drawButton(context);`, and do not draw label
         Identifier texture = isPressed ? (hovered ? ON_HOVER_TEXTURE : ON_TEXTURE)
                 : (hovered ? OFF_HOVER_TEXTURE : OFF_TEXTURE);
 
