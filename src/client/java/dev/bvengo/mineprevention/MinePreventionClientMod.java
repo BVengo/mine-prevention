@@ -33,8 +33,8 @@ public class MinePreventionClientMod implements ClientModInitializer {
 		// Open the config screen when the key is pressed
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (openConfigScreen.consumeClick()) {
-				if (client.screen == null) {
-					client.setScreen(new ConfigsScreen());
+				if (client.gui.screen() == null) {
+					client.gui.setScreen(new ConfigsScreen());
 				}
 			}
 		});
