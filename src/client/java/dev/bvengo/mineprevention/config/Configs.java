@@ -1,11 +1,11 @@
 package dev.bvengo.mineprevention.config;
 
-import net.minecraft.item.BlockItem;
-import net.minecraft.registry.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.BlockItem;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class Configs extends ConfigParser implements Serializable {
@@ -15,10 +15,11 @@ public class Configs extends ConfigParser implements Serializable {
 
 	public void update() {
 		// Load all items in the game
-		ArrayList<String> allMineableKeys = Registries.ITEM.stream()
+		ArrayList<String> allMineableKeys = BuiltInRegistries.ITEM.stream()
 			.filter(item -> item instanceof BlockItem)
-			.sorted(Comparator.comparing(Registries.ITEM::getRawId))
-			.map(item -> Registries.ITEM.getId(item).toString())
+			.map(BuiltInRegistries.ITEM::getKey)
+			.sorted()
+			.map(Identifier::toString)
 			.collect(Collectors.toCollection(ArrayList::new));
 
 		// Add the missing items to the allow list

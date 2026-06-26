@@ -4,6 +4,7 @@
     "mineprevention.screen.options.title": "Mine Prevention Options",
     "mineprevention.screen.options.allowed": "Allowed Blocks",
     "mineprevention.screen.options.denied": "Denied Blocks",
+    "mineprevention.screen.options.search": "Filter down to matching blocks",
     "mineprevention.narration.container.allowed": "Allowed Blocks",
     "mineprevention.narration.container.denied": "Denied Blocks",
     "mineprevention.button.left.tooltip": "Click to allow mining of all items",

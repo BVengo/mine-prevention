@@ -1,21 +1,23 @@
 package dev.bvengo.mineprevention.ui;
 
 import dev.bvengo.mineprevention.MinePreventionMod;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.resources.Identifier;
+
 
 /**
  * Custom button widget that is used as a trigger rather than a toggle.
  * i.e. it is only active while the button is being pressed.
  */
 @Environment(EnvType.CLIENT)
-public class HoverableButtonWidget extends ButtonWidget {
+public class HoverableButtonWidget extends Button {
 
     private final Identifier ON_TEXTURE;
     private final Identifier OFF_TEXTURE;
@@ -24,26 +26,28 @@ public class HoverableButtonWidget extends ButtonWidget {
 
     protected boolean isPressed = false;
 
-    public HoverableButtonWidget(String buttonId, int x, int y, int width, int height, PressAction pressAction) {
-        super(x, y, width, height, ScreenTexts.EMPTY, pressAction, DEFAULT_NARRATION_SUPPLIER);
+    public HoverableButtonWidget(String buttonId, int x, int y, int width, int height, OnPress onPress) {
+        super(x, y, width, height, CommonComponents.EMPTY, onPress, DEFAULT_NARRATION);
 
-        this.setTooltip(Tooltip.of(
-            // Explicit import thanks to ButtonWidget.Text subclass name conflict
-            net.minecraft.text.Text.translatable(MinePreventionMod.MOD_ID + ".button." + buttonId + ".tooltip")
+        this.setTooltip(Tooltip.create(
+            // Explicit import thanks to Button subclass name conflict
+            net.minecraft.network.chat.Component.translatable(MinePreventionMod.MOD_ID + ".button." + buttonId + ".tooltip")
         ));
 
-        ON_TEXTURE = Identifier.of(MinePreventionMod.MOD_ID, buttonId + "_button_on");
-        OFF_TEXTURE = Identifier.of(MinePreventionMod.MOD_ID, buttonId + "_button_off");
-        ON_HOVER_TEXTURE = Identifier.of(MinePreventionMod.MOD_ID, buttonId + "_button_on_hovered");
-        OFF_HOVER_TEXTURE = Identifier.of(MinePreventionMod.MOD_ID, buttonId + "_button_off_hovered");
+        ON_TEXTURE = Identifier.fromNamespaceAndPath(MinePreventionMod.MOD_ID, buttonId + "_button_on");
+        OFF_TEXTURE = Identifier.fromNamespaceAndPath(MinePreventionMod.MOD_ID, buttonId + "_button_off");
+        ON_HOVER_TEXTURE = Identifier.fromNamespaceAndPath(MinePreventionMod.MOD_ID, buttonId + "_button_on_hovered");
+        OFF_HOVER_TEXTURE = Identifier.fromNamespaceAndPath(MinePreventionMod.MOD_ID, buttonId + "_button_off_hovered");
+    }
+
+    protected Identifier getTextureIdentifier() {
+        return isPressed ? (isHovered ? ON_HOVER_TEXTURE : ON_TEXTURE)
+                : (isHovered ? OFF_HOVER_TEXTURE : OFF_TEXTURE);
     }
 
     @Override
-    public void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-        // Replacing the final `this.drawButton(context);`, and do not draw label
-        Identifier texture = isPressed ? (hovered ? ON_HOVER_TEXTURE : ON_TEXTURE)
-                : (hovered ? OFF_HOVER_TEXTURE : OFF_TEXTURE);
-
-        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), width, height);
+    public void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        Identifier texture = getTextureIdentifier();
+        context.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), width, height);
     }
 }

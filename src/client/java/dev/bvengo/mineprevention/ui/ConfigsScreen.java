@@ -1,14 +1,14 @@
 package dev.bvengo.mineprevention.ui;
 
 import dev.bvengo.mineprevention.MinePreventionClientMod;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.CommonColors;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -19,7 +19,10 @@ import static dev.bvengo.mineprevention.ui.Constants.*;
 
 public class ConfigsScreen extends Screen {
 
-	ArrayList<ItemWidget> allItems = new ArrayList<>();
+	private static final Component TITLE = Component.translatable(MOD_ID + ".screen.options.title");
+	private static final Component SEARCH_HINT;
+
+	ArrayList<ItemButtonWidget> allItems = new ArrayList<>();
 
 	ItemContainerWidget allowedContainer;
 	ItemContainerWidget deniedContainer;
@@ -27,19 +30,23 @@ public class ConfigsScreen extends Screen {
 	TriggerButtonWidget allowAllButton;
 	TriggerButtonWidget denyAllButton;
 
-	TextWidget titleWidget;
-	TextFieldWidget searchField;
+	StringWidget titleWidget;
+	EditBox searchField;
+
+	static {
+		SEARCH_HINT = Component.translatable(MOD_ID + ".screen.options.search").withStyle(EditBox.SEARCH_HINT_STYLE);
+	}
 
 	public ConfigsScreen() {
-		super(Text.translatable(MOD_ID + ".screen.options.title"));
+		super(TITLE);
 	}
 
 	@Override
 	protected void init() {
 		// Load all items, sorted for correct display order
 		allItems = Stream.concat(
-				MinePreventionClientMod.CONFIGS.allowList.stream().map(itemId -> new ItemWidget(client, itemId, true)),
-				MinePreventionClientMod.CONFIGS.denyList.stream().map(itemId -> new ItemWidget(client, itemId, false))
+				MinePreventionClientMod.CONFIGS.allowList.stream().map(itemId -> new ItemButtonWidget(minecraft, itemId, true)),
+				MinePreventionClientMod.CONFIGS.denyList.stream().map(itemId -> new ItemButtonWidget(minecraft, itemId, false))
 		).sorted().collect(Collectors.toCollection(ArrayList::new));
 
 		initTitle();
@@ -51,15 +58,25 @@ public class ConfigsScreen extends Screen {
 	}
 
 	private void initTitle() {
-		titleWidget = new CenteredTextWidget(0, TEXT_HEIGHT, width, TEXT_HEIGHT, this.getTitle(), textRenderer);
-		this.addDrawable(titleWidget);
+		titleWidget = new CenteredTextWidget(0, TEXT_HEIGHT, width, TEXT_HEIGHT, this.getTitle(), font);
+		this.addRenderableOnly(titleWidget);
 	}
 
 	private void initSearchField() {
-		this.searchField = new TextFieldWidget(textRenderer, HORIZONTAL_PADDING, titleWidget.getBottom() + VERTICAL_PADDING, width - HORIZONTAL_PADDING * 4 - BUTTON_SIZE * 2, SEARCH_HEIGHT, Text.translatable(MOD_ID + ".screen.options.search"));
-		this.searchField.setChangedListener((string) -> refreshItemLists(true)); // Update only visible items
-		this.searchField.setFocusUnlocked(false);
-		this.addSelectableChild(this.searchField);
+		this.searchField = new EditBox(
+				this.font,
+				HORIZONTAL_PADDING,
+				titleWidget.getBottom() + VERTICAL_PADDING,
+				width - HORIZONTAL_PADDING * 4 - BUTTON_SIZE * 2,
+				SEARCH_HEIGHT,
+				Component.empty()
+		);
+		this.searchField.setHint(SEARCH_HINT);
+		this.searchField.setResponder((string) -> {
+			refreshItemLists(true);  // Update only visible items
+		});
+		this.searchField.setFocused(true);
+		this.addRenderableWidget(this.searchField);
 	}
 
 	private void initMoveButtons() {
@@ -68,13 +85,13 @@ public class ConfigsScreen extends Screen {
 			allItems.forEach(item -> item.setAllowed(true));
 			refreshItemLists(true); // Refresh the visible items only
 		});
-		this.addSelectableChild(allowAllButton);
+		this.addRenderableWidget(allowAllButton);
 
 		this.denyAllButton = new TriggerButtonWidget("right", allowAllButton.getRight() + HORIZONTAL_PADDING, searchField.getY(), BUTTON_SIZE, BUTTON_SIZE, (button) -> {
 			allItems.forEach(item -> item.setAllowed(false));
 			refreshItemLists(true); // Refresh the visible items only
 		});
-		this.addSelectableChild(denyAllButton);
+		this.addRenderableWidget(denyAllButton);
 	}
 
 	private void initItemContainers() {
@@ -82,56 +99,51 @@ public class ConfigsScreen extends Screen {
 		int containerWidth = width / 2 - HORIZONTAL_PADDING * 2;  // Padding either side
 		int containerHeight = height - searchField.getBottom() - VERTICAL_PADDING - VERTICAL_PADDING;
 
-		allowedContainer = new ItemContainerWidget(textRenderer, HORIZONTAL_PADDING, searchField.getBottom() + VERTICAL_PADDING, containerWidth, containerHeight, Text.translatable(MOD_ID + ".screen.options.allowed"));
-		this.addSelectableChild(allowedContainer);
+		allowedContainer = new ItemContainerWidget(minecraft, HORIZONTAL_PADDING, searchField.getBottom() + VERTICAL_PADDING, containerWidth, containerHeight, Component.translatable(MOD_ID + ".screen.options.allowed"));
+		this.addRenderableWidget(allowedContainer);
 
 		// Deny container
-		deniedContainer = new ItemContainerWidget(textRenderer, width - containerWidth - HORIZONTAL_PADDING, allowedContainer.getY(), containerWidth, containerHeight, Text.translatable(MOD_ID + ".screen.options.denied"));
-		this.addSelectableChild(deniedContainer);
+		deniedContainer = new ItemContainerWidget(minecraft, width - containerWidth - HORIZONTAL_PADDING, allowedContainer.getY(), containerWidth, containerHeight, Component.translatable(MOD_ID + ".screen.options.denied"));
+		this.addRenderableWidget(deniedContainer);
 	}
 
 	/**
 	 * Refresh only the visible items in the containers based on the current filters.
 	 */
 	private void refreshItemLists(boolean shouldResetScroll) {
-		String searchQuery = searchField.getText().toLowerCase();
+		String searchQuery = searchField.getValue().toLowerCase();
 
 		// Filter items for allowedContainer
-		ArrayList<ItemWidget> allowedItems = allItems.stream()
-				.filter(item -> item.isAllowed() && item.getItemStack().getName().getString().toLowerCase().contains(searchQuery))
+		ArrayList<ItemButtonWidget> allowedItems = allItems.stream()
+				.filter(item -> item.isAllowed() && item.getItemStack().getItemName().getString().toLowerCase().contains(searchQuery))
 				.collect(Collectors.toCollection(ArrayList::new));
 		allowedContainer.setItems(allowedItems, shouldResetScroll);
 
 		// Filter items for deniedContainer
-		ArrayList<ItemWidget> deniedItems = allItems.stream()
-				.filter(item -> !item.isAllowed() && item.getItemStack().getName().getString().toLowerCase().contains(searchQuery))
+		ArrayList<ItemButtonWidget> deniedItems = allItems.stream()
+				.filter(item -> !item.isAllowed() && item.getItemStack().getItemName().getString().toLowerCase().contains(searchQuery))
 				.collect(Collectors.toCollection(ArrayList::new));
 		deniedContainer.setItems(deniedItems, shouldResetScroll);
 	}
 
 	private void save() {
-		MinePreventionClientMod.CONFIGS.allowList = allItems.stream().filter(ItemWidget::isAllowed).map(ItemWidget::getItemId).collect(Collectors.toCollection(ArrayList::new));
-		MinePreventionClientMod.CONFIGS.denyList = allItems.stream().filter((item) -> !item.isAllowed()).map(ItemWidget::getItemId).collect(Collectors.toCollection(ArrayList::new));
+		MinePreventionClientMod.CONFIGS.allowList = allItems.stream().filter(ItemButtonWidget::isAllowed).map(ItemButtonWidget::getItemId).collect(Collectors.toCollection(ArrayList::new));
+		MinePreventionClientMod.CONFIGS.denyList = allItems.stream().filter((item) -> !item.isAllowed()).map(ItemButtonWidget::getItemId).collect(Collectors.toCollection(ArrayList::new));
 		MinePreventionClientMod.CONFIGS.save();
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		searchField.render(context, mouseX, mouseY, delta);
-		allowAllButton.render(context, mouseX, mouseY, delta);
-		denyAllButton.render(context, mouseX, mouseY, delta);
-		allowedContainer.render(context, mouseX, mouseY, delta);
-		deniedContainer.render(context, mouseX, mouseY, delta);
+	public void extractRenderState(final GuiGraphicsExtractor graphics, int mouseX, int mouseY, final float a) {
+		super.extractRenderState(graphics, mouseX, mouseY, a);
 
-		context.drawVerticalLine(width / 2, searchField.getBottom() + VERTICAL_PADDING, height - VERTICAL_PADDING, Colors.LIGHT_GRAY);
+		graphics.verticalLine(width / 2, searchField.getBottom() + VERTICAL_PADDING, height - VERTICAL_PADDING, CommonColors.LIGHT_GRAY);
 	}
 
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
-		boolean clicked = super.mouseClicked(click, doubled);
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
+		boolean clicked = super.mouseClicked(event, doubled);
 
-		Element focused  = getFocused();
+		GuiEventListener focused  = getFocused();
 		if (focused != searchField) {
 			searchField.setFocused(false);
 
@@ -144,8 +156,8 @@ public class ConfigsScreen extends Screen {
 	}
 
 	@Override
-	public void close() {
+	public void removed() {
 		save();
-		super.close();
+		super.removed();
 	}
 }
