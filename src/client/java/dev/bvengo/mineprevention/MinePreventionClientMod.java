@@ -8,7 +8,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 
 import static com.mojang.text2speech.Narrator.LOGGER;
@@ -25,8 +24,8 @@ public class MinePreventionClientMod implements ClientModInitializer {
 		// Keybinding to open the config screen
 		openConfigScreen = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				MOD_ID + ".key.open_settings",
-				InputConstants.Type.KEYSYM,
-				GLFW.GLFW_KEY_M,
+				InputConstants.Type.KEYBOARD,
+				InputConstants.KEY_M,
 				CATEGORY
 		));
 
