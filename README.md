@@ -19,6 +19,13 @@ The config file for this mod is located in the `config` folder of your Minecraft
 
 ![Example](./assets/allow_amethyst.png)
 
+## Building
+
+Requires Java 25. ModKit 0.1.0 is not published yet. With an explicit local ModKit
+checkout at revision `48d7384aa93b8e177bc014e3ccd504e96cd64736`, run
+`./gradlew -Pmodkit.includeBuild=/path/to/bvengo-modkit buildAll`.
+The binary and sources JARs are collected in `build/libs`.
+
 ## Contributing
 Contributions and suggestions are always welcome! Please limit all issues to only one feature at a time - feel free to open multiple at once if you have many ideas. Similarly, please limit pull requests to a single feature at a time and try to follow the existing code style.
 

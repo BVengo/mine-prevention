@@ -1,0 +1,59 @@
+schema = 1
+
+[mod]
+id = "mineprevention"
+group = "dev.bvengo"
+version = "1.1.1"
+
+[targets]
+minecraft = ["26.3"]
+loaders = ["fabric"]
+vcs = "26.3-fabric"
+
+[dependencies]
+fabric_api = true
+modmenu = true
+
+[compatibility."26.3"]
+fabric = "~26.3"
+
+[packaging]
+licence_file = "LICENSE"
+licence_entry = "LICENSE_mineprevention"
+
+[publishing]
+maven = true
+
+[metadata]
+name = "Mine Prevention"
+description = "Allow or deny any blocks from being mined!"
+licence = "LGPL-3.0"
+environment = "*"
+authors = ["BVengo"]
+icon = "assets/mineprevention/icon.png"
+
+[metadata.contact]
+sources = "https://github.com/BVengo/mine-prevention"
+issues = "https://github.com/BVengo/mine-prevention/issues"
+
+[metadata.entrypoints]
+main = ["dev.bvengo.mineprevention.MinePreventionMod"]
+client = ["dev.bvengo.mineprevention.MinePreventionClientMod"]
+modmenu = ["dev.bvengo.mineprevention.MinePreventionModMenuApiImpl"]
+
+[metadata.fabric.depends]
+fabric-api = "*"
+
+[metadata.fabric.recommends]
+modmenu = "*"
+
+[metadata.fabric.custom.modmenu]
+update_checker = true
+
+[metadata.fabric.custom.modmenu.links]
+"modmenu.discord" = "https://discord.gg/gyTa5v7kKk"
+"modmenu.modrinth" = "https://modrinth.com/mod/mine-prevention"
+
+[metadata.mixins]
+package = "dev.bvengo.mineprevention.mixin"
+client = ["client.PlayerEntityMixin", "client.ScrollbarAccessWidener"]
