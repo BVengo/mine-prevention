@@ -1,34 +1,17 @@
 package dev.bvengo.mineprevention.ui;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.input.MouseButtonEvent;
+import dev.bvengo.mineprevention.MinePreventionMod;
+import dev.bvengo.modcore.client.ui.ButtonSprites;
+import dev.bvengo.modcore.client.ui.SpriteTriggerButton;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
-/**
- * Custom button widget that is used as a trigger rather than a toggle.
- * i.e. it is only active while the button is being pressed.
- */
-@Environment(EnvType.CLIENT)
-public class TriggerButtonWidget extends HoverableButtonWidget {
-
+public final class TriggerButtonWidget extends SpriteTriggerButton {
     public TriggerButtonWidget(String buttonId, int x, int y, int width, int height, OnPress onPress) {
-        super(buttonId, x, y, width, height, onPress);
-    }
-
-    @Override
-    public void onPress(final InputWithModifiers input) {
-        isPressed = true;
-    }
-
-    @Override
-    public void onRelease(final MouseButtonEvent event) {
-        // Release toggle texture on release, and perform press action.
-        // Only perform press action if button remains hovered.
-        if(isHovered) {
-            this.onPress.onPress(this);
-        }
-
-        isPressed = false;
+        super(x, y, width, height,
+                Component.translatable(MinePreventionMod.MOD_ID + ".button." + buttonId + ".tooltip"),
+                ButtonSprites.forButton(Identifier.fromNamespaceAndPath(MinePreventionMod.MOD_ID, buttonId)), onPress);
+        setTooltip(Tooltip.create(getMessage()));
     }
 }
