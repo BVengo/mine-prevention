@@ -31,3 +31,18 @@ Contributions and suggestions are always welcome! Please limit all issues to onl
 
 
 To further discuss or get notifications of new updates, check out my [Discord](https://discord.gg/gyTa5v7kKk). If you like what I do, consider supporting me on Ko-Fi! [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C7DZ3FB)
+
+## Shared rendering and UI
+
+This mod requires a separate BVengo ModCore JAR for its game version and loader.
+Build ModCore first, then build this mod with:
+
+```sh
+./gradlew -Pmodkit.includeBuild=../bvengo-modkit -Pmodcore.artifacts=../bvengo-modcore/build/libs buildAll
+```
+
+Use the pinned ModKit and ModCore source revisions from `.github/workflows/build.yml`
+for a matching source build. For published Maven artifacts, supply
+`-Pmodcore.repository=<Maven-repository-URI>` instead of `modcore.artifacts`.
+ModCore is required by the loader and is not bundled. Releases on Modrinth must
+also declare the actual ModCore project or version as a required dependency.

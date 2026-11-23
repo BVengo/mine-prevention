@@ -1,6 +1,7 @@
 package dev.bvengo.mineprevention.ui;
 
 import dev.bvengo.mineprevention.MinePreventionClientMod;
+import dev.bvengo.modcore.client.ui.CenteredTextWidget;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.StringWidget;

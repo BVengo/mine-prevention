@@ -11,6 +11,7 @@ loaders = ["fabric"]
 vcs = "26.3-fabric"
 
 [dependencies]
+modcore = true
 fabric_api = true
 modmenu = true
 
@@ -42,6 +43,7 @@ client = ["dev.bvengo.mineprevention.MinePreventionClientMod"]
 modmenu = ["dev.bvengo.mineprevention.MinePreventionModMenuApiImpl"]
 
 [metadata.fabric.depends]
+bvengomodcore = ">=0.1.0 <0.2.0"
 fabric-api = "*"
 
 [metadata.fabric.recommends]
@@ -56,4 +58,4 @@ update_checker = true
 
 [metadata.mixins]
 package = "dev.bvengo.mineprevention.mixin"
-client = ["client.PlayerEntityMixin", "client.ScrollbarAccessWidener"]
+client = ["client.PlayerEntityMixin"]
